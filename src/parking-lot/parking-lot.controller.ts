@@ -74,4 +74,12 @@ export class ParkingLotController {
     return this.parkingLotService.getSlotNumbersByColor(color);
   }
 
+  //Route to fetch slot 
+  @Get('slot/:registrationNo')
+  getSlotByRegistrationNo(@Param('registrationNo') registrationNo: string) {
+    return {
+      slot_number: this.parkingLotService.getSlotByRegistrationNo(registrationNo),
+    };
+  }
+
 }

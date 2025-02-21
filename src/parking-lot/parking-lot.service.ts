@@ -173,4 +173,16 @@ export class ParkingLotService {
     }
     return slotNos;
   }
+  getSlotByRegistrationNo(registrationNo: string): number {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    for (const [slotNo, slot] of this.slots) {
+      if (slot.isOccupied && slot.car?.registrationNo === registrationNo) {
+        return slotNo;
+      }
+    }
+    throw new NotFoundException('Car with given registration number not found');
+  }
 }

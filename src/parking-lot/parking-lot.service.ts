@@ -2,7 +2,7 @@ import { Injectable , BadRequestException} from '@nestjs/common';
 import { ParkingSlot, Car } from './entities/parking-lot.entity';
 @Injectable()
 export class ParkingLotService {
-    private slots: Map<number, ParkingSlot>; // Key: slotNo, Value: ParkingSlot
+  private slots: Map<number, ParkingSlot>; // Key: slotNo, Value: ParkingSlot
   private totalSlots: number;
 
   constructor() {
@@ -27,6 +27,24 @@ export class ParkingLotService {
       });
     }
     console.log('Slots:', Array.from(this.slots.entries()));
+    return this.totalSlots;
+  }
+  expandParkingLot(increment: number): number {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+    if (increment <= 0) {
+      throw new BadRequestException('Increment must be a positive number');
+    }
+
+    const newSize = this.totalSlots + increment;
+    for (let i = this.totalSlots + 1; i <= newSize; i++) {
+      this.slots.set(i, {
+        slotNo: i,
+        isOccupied: false,
+      });
+    }
+    this.totalSlots = newSize;
     return this.totalSlots;
   }
 }

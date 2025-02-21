@@ -17,4 +17,14 @@ export class ParkingLotController {
       total_slot: this.parkingLotService.expandParkingLot(increment),
     };
   }
+  @Post('park')
+  park(@Body() body: { car_reg_no: string; car_color: string }) {
+    return {
+      allocated_slot_number: this.parkingLotService.parkCar(
+        body.car_reg_no,
+        body.car_color,
+      ),
+    };
+  }
+
 }

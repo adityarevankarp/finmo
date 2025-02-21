@@ -47,4 +47,41 @@ export class ParkingLotService {
     this.totalSlots = newSize;
     return this.totalSlots;
   }
+  parkCar(registrationNo: string, color: string): number {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    
+    let occupiedCount = 0;
+    for (const slot of this.slots.values()) {
+      if (slot.isOccupied) occupiedCount++;
+    }
+    if (occupiedCount === this.totalSlots) {
+      throw new BadRequestException('Parking lot is full');
+    }
+
+    
+    for (let i = 1; i <= this.totalSlots; i++) {
+      const slot = this.slots.get(i);
+      if (slot && !slot.isOccupied) {
+        slot.isOccupied = true;
+        slot.car = { registrationNo, color };
+        this.slots.set(i, slot);
+        console.log(`Car parked in slot ${i}: ${registrationNo} (${color})`);
+        this.printSlots();
+        return i;
+      }
+    }
+    throw new BadRequestException('No available parking slot found');
+  }
+  private printSlots() {
+    console.log('Parking slots');
+    this.slots.forEach((slot, slotNo) => {
+      const carDetails = slot.isOccupied
+        ? `Car - Registration No: ${slot.car?.registrationNo}, Color: ${slot.car?.color}`
+        : 'Empty';
+      console.log(`Slot ${slotNo}: ${carDetails}`);
+    });
+  }
 }

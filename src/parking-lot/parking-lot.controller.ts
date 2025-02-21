@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch,BadRequestException ,HttpCode} from '@nestjs/common';
+import { Controller, Post, Body, Patch,BadRequestException ,HttpCode, Get} from '@nestjs/common';
 import { ParkingLotService } from './parking-lot.service';
 
 @Controller()
@@ -40,6 +40,10 @@ export class ParkingLotController {
       };
     }
     throw new BadRequestException('Must provide either slot_number or car_registration_no');
+  }
+  @Get('status')
+  getStatus() {
+    return this.parkingLotService.getOccupiedSlots();
   }
 
 }

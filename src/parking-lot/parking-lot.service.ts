@@ -117,4 +117,21 @@ export class ParkingLotService {
     }
     throw new NotFoundException('Car with given registration number not found');
   }
+  getOccupiedSlots(): { slot_no: number; registration_no: string; color: string }[] {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    const occupiedSlots: { slot_no: number; registration_no: string; color: string }[] = [];
+    for (const slot of this.slots.values()) {
+      if (slot.isOccupied && slot.car) {
+        occupiedSlots.push({
+          slot_no: slot.slotNo,
+          registration_no: slot.car.registrationNo,
+          color: slot.car.color,
+        });
+      }
+    }
+    return occupiedSlots;
+  }
 }

@@ -1,99 +1,262 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Parking Lot System API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A RESTful API built with NestJS and TypeScript for managing a car parking lot system. The system allows initializing a parking lot, parking cars, freeing slots, and querying parking status without a database, using in-memory storage.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Features
+- Initialize and expand a parking lot
+- Park and free cars by slot or registration number
+- Query occupied slots, registration numbers, and slot numbers by color
+- Containerized with Docker
 
-## Description
+## Prerequisites
+- Node.js (v16 or later)
+- npm
+- Docker (optional, for containerized running)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Setup
 
-## Project setup
-
+### Local Development
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/adityarevankarp/finmo.git
+   cd parking-lot-system
+   ```
+2. Install dependencies:
+  ```bash
+  npm install
+```
+3.Start the app:
 ```bash
-$ npm install
+npm run start:dev
+```
+The API will be available at http://localhost:3000.
+
+### Usnig Docker
+```bash
+docker build -t parking-lot-system .
+docker run -p 3000:3000 parking-lot-system
+```
+## API Endpoints
+### 1.Initialize Parking Lot
+#### Method: `POST`
+#### Endpoint: `/parking_lot`
+#### Request Body:
+```json
+{
+  "no_of_slot": 6
+}
+```
+#### Response `Response (200 OK):`
+```json
+{
+  "total_slot": 6
+}
+```
+#### Errors:
+#### 400 Bad Request: If already initialized or size ≤ 0
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot already initialized",
+  "error": "Bad Request"
+}
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+### 2.Expand Parking lot
+#### Method: `PATCH`
+#### Endpoint: `/parking_lot`
+#### Request Body:
+```json
+{
+  "increment_slot": 3
+}
+```
+#### Response `Response (200 OK):`
+```json
+{
+  "total_slot": 9
+}
+```
+#### Errors:
+#### 400 Bad Request: If already initialized or size ≤ 0
+```json
+{
+ "statusCode": 400,
+  "message": "Parking lot not initialized yet",
+  "error": "Bad Request"
+}
 ```
 
-## Run tests
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+### 3.Park a Car
+#### Method: `POST`
+#### Endpoint: `/park`
+#### Request Body:
+```json
+{
+  "car_reg_no": "KA-01-AB-2211",
+  "car_color": "white"
+}
+```
+#### Response `Response (201 CREATED):`
+```json
+{
+  "allocated_slot_number": 1
+}
+```
+#### Errors:
+#### 400 Bad Request: If lot is full or not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot is full",
+  "error": "Bad Request"
+}
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g mau
-$ mau deploy
+### 4.Clear a Slot by slot_no & Registration_no
+#### Method: `POST`
+#### Endpoint: `/clear`
+#### Request Body:
+```json
+{
+  "slot_number": 1
+}
+```
+```json
+{
+ "car_registration_no": "KA-01-AB-2211"
+}
+```
+#### Response `Response (200 ok):`
+```json
+{
+  "freed_slot_number": 1
+}
+```
+#### Errors:
+#### 400 Bad Request: If neither parameter provided or not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Must provide either slot_number or car_registration_no",
+  "error": "Bad Request"
+}
+```
+#### 404 Not Found: If slot is free or car not found
+```
+{
+  "statusCode": 404,
+  "message": "Slot is already free or does not exist",
+  "error": "Not Found"
+}
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### 5.Get Parking Status
+#### Method: `GET`
+#### Endpoint: `/status`
 
-## Resources
+#### Response `Response (200 OK):`
+```json
+[
+  {
+    "slot_no": 1,
+    "registration_no": "KA-01-AB-2211",
+    "color": "white"
+  },
+  {
+    "slot_no": 2,
+    "registration_no": "KA-02-CD-3344",
+    "color": "black"
+  }
+]
+```
+#### Errors:
+#### 400 Bad Request: not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot not initialized yet",
+  "error": "Bad Request"
+}
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+### 6. Get Registration Numbers by Color
+#### Method: `GET`
+#### Endpoint: `/registration_numbers/:color`
+#### EG:- GET /parking/registration_numbers/white
+#### Response `Response (200 OK):`
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```json
+[
+  "KA-01-AB-2211",
+  "KA-03-EF-5566"
+]
+```
+#### Errors:
+#### 400 Bad Request: not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot not initialized yet",
+  "error": "Bad Request"
+}
+```
+#### Returns [] if no cars match.
 
-## Support
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### 7. Get Slot Numbers by Color
+#### Method: `GET`
+#### Endpoint: `/slot_numbers/:color`
+#### EG:- GET /parking/slot_numbers/white
+#### Response `Response (200 OK):`
 
-## Stay in touch
+```json
+[
+  "1",
+  "3"
+]
+```
+#### Errors:
+#### 400 Bad Request: not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot not initialized yet",
+  "error": "Bad Request"
+}
+```
+#### Returns [] if no cars match.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+### Running Tests
+```bash
+npm run test
+```
+## Time Complexity
 
-## License
+The parking lot system uses an in-memory `Map` to store slots, providing efficient access by slot number. Below is the time complexity for each major operation:
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+- **Initialize Parking Lot (`POST /parking_lot`)**: **O(n)**  
+  Creates `n` slots in the `Map`, where `n` is the number of slots specified. Each insertion is O(1), repeated `n` times.
+
+- **Expand Parking Lot (`PATCH /parking_lot`)**: **O(m)**  
+  Adds `m` new slots to the `Map`, where `m` is the increment. Each insertion is O(1), repeated `m` times.
+
+- **Park a Car (`POST /park`)**: **O(n)**  
+  Checks if the lot is full (O(n)) and finds the first available slot by scanning from slot 1 (O(n) in worst case if all prior slots are occupied). Could be optimized to O(1) with a min-heap of available slots.
+
+- **Clear Slot by Slot Number (`POST /clear` with `slot_number`)**: **O(1)**  
+  Direct `Map` lookup by slot number, followed by a constant-time update.
+
+- **Clear Slot by Registration Number (`POST /clear` with `car_registration_no`)**: **O(n)**  
+  Linear search through all slots to find the matching registration number. Could be optimized to O(1) with an additional `Map` of registration numbers to slot numbers.
+
+- **Get Parking Status (`GET /status`)**: **O(n)**  
+  Scans all slots to collect occupied ones, where `n` is the total number of slots.
+
+- **Get Registration Numbers by Color (`GET /registration_numbers/:color`)**: **O(n)**  
+  Scans all slots to filter by color, where `n` is the total number of slots.
+
+
+
+

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch,BadRequestException ,HttpCode, Get} from '@nestjs/common';
+import { Controller, Post, Body, Patch,BadRequestException ,HttpCode, Get,Param} from '@nestjs/common';
 import { ParkingLotService } from './parking-lot.service';
 
 @Controller()
@@ -44,6 +44,15 @@ export class ParkingLotController {
   @Get('status')
   getStatus() {
     return this.parkingLotService.getOccupiedSlots();
+  }
+
+  @Get('registration_numbers/:color')
+  getRegistrationNumbers(@Param('color') color: string) {
+    return this.parkingLotService.getRegistrationNumbersByColor(color);
+  }
+  @Get('slot_numbers/:color')
+  getSlotNumbers(@Param('color') color: string) {
+    return this.parkingLotService.getSlotNumbersByColor(color);
   }
 
 }

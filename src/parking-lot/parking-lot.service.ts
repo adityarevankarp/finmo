@@ -134,4 +134,30 @@ export class ParkingLotService {
     }
     return occupiedSlots;
   }
+  getRegistrationNumbersByColor(color: string): string[] {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    const regNos: string[] = [];
+    for (const slot of this.slots.values()) {
+      if (slot.isOccupied && slot.car && slot.car.color.toLowerCase() === color.toLowerCase()) {
+        regNos.push(slot.car.registrationNo);
+      }
+    }
+    return regNos;
+  }
+  getSlotNumbersByColor(color: string): string[] {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    const slotNos: string[] = [];
+    for (const slot of this.slots.values()) {
+      if (slot.isOccupied && slot.car && slot.car.color.toLowerCase() === color.toLowerCase()) {
+        slotNos.push(slot.slotNo.toString());
+      }
+    }
+    return slotNos;
+  }
 }

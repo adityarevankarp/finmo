@@ -1,4 +1,4 @@
-import { Injectable , BadRequestException} from '@nestjs/common';
+import { Injectable , BadRequestException, NotFoundException} from '@nestjs/common';
 import { ParkingSlot, Car } from './entities/parking-lot.entity';
 @Injectable()
 export class ParkingLotService {
@@ -83,5 +83,38 @@ export class ParkingLotService {
         : 'Empty';
       console.log(`Slot ${slotNo}: ${carDetails}`);
     });
+  }
+  clearSlotBySlotNo(slotNo: number): number {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    const slot = this.slots.get(slotNo);
+    if (!slot || !slot.isOccupied) {
+      throw new NotFoundException('Slot is already free or does not exist');
+    }
+
+    slot.isOccupied = false;
+    slot.car = undefined;
+    this.slots.set(slotNo, slot);
+    this.printSlots();
+    return slotNo;
+  }
+
+  clearSlotByRegNo(registrationNo: string): number {
+    if (this.totalSlots === 0) {
+      throw new BadRequestException('Parking lot not initialized yet');
+    }
+
+    for (const [slotNo, slot] of this.slots) {
+      if (slot.isOccupied && slot.car?.registrationNo === registrationNo) {
+        slot.isOccupied = false;
+        slot.car = undefined;
+        this.slots.set(slotNo, slot);
+        this.printSlots();
+        return slotNo;
+      }
+    }
+    throw new NotFoundException('Car with given registration number not found');
   }
 }

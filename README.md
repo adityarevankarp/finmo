@@ -184,7 +184,7 @@ docker run -p 3000:3000 parking-lot-system
 ### 6. Get Registration Numbers by Color
 #### Method: `GET`
 #### Endpoint: `/registration_numbers/:color`
-#### EG:- GET /parking/registration_numbers/white
+#### EG:- GET /registration_numbers/white
 #### Response `Response (200 OK):`
 
 ```json
@@ -208,7 +208,7 @@ docker run -p 3000:3000 parking-lot-system
 ### 7. Get Slot Numbers by Color
 #### Method: `GET`
 #### Endpoint: `/slot_numbers/:color`
-#### EG:- GET /parking/slot_numbers/white
+#### EG:- GET /slot_numbers/white
 #### Response `Response (200 OK):`
 
 ```json
@@ -227,6 +227,41 @@ docker run -p 3000:3000 parking-lot-system
 }
 ```
 #### Returns [] if no cars match.
+
+### Running Tests
+```bash
+npm run test
+```
+
+### 8. Get Slot by Registration Number
+#### Method: `GET`
+#### Endpoint: `/slot/:registrationNo`
+#### EG:- GET /slot/KA-01-AB-2211
+#### Response `Response (200 OK):`
+
+```json
+{
+  "slot_number": 1
+}
+```
+#### Errors:
+#### 400 Bad Request: not initialized
+```json
+{
+  "statusCode": 400,
+  "message": "Parking lot not initialized yet",
+  "error": "Bad Request"
+}
+```
+
+#### Returns if car not found
+```bash
+{
+  "statusCode": 404,
+  "message": "Car with given registration number not found",
+  "error": "Not Found"
+}
+```
 
 ### Running Tests
 ```bash

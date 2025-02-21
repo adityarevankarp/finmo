@@ -2,9 +2,10 @@ import { Injectable , BadRequestException, NotFoundException} from '@nestjs/comm
 import { ParkingSlot, Car } from './entities/parking-lot.entity';
 @Injectable()
 export class ParkingLotService {
+  //inititalizing instance variables...
   private slots: Map<number, ParkingSlot>; // Key: slotNo, Value: ParkingSlot
   private totalSlots: number;
-
+  
   constructor() {
     this.slots = new Map();
     this.totalSlots = 0;
@@ -29,6 +30,8 @@ export class ParkingLotService {
     console.log('Slots:', Array.from(this.slots.entries()));
     return this.totalSlots;
   }
+
+  //adding size to the same map...
   expandParkingLot(increment: number): number {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -47,6 +50,8 @@ export class ParkingLotService {
     this.totalSlots = newSize;
     return this.totalSlots;
   }
+
+  //Parking feature implementation..
   parkCar(registrationNo: string, color: string): number {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -61,7 +66,7 @@ export class ParkingLotService {
       throw new BadRequestException('Parking lot is full');
     }
 
-    
+    //each car to be inserted is checked for the earliest spot available from 1
     for (let i = 1; i <= this.totalSlots; i++) {
       const slot = this.slots.get(i);
       if (slot && !slot.isOccupied) {
@@ -75,6 +80,8 @@ export class ParkingLotService {
     }
     throw new BadRequestException('No available parking slot found');
   }
+
+  //Helper function to display the map
   private printSlots() {
     console.log('Parking slots');
     this.slots.forEach((slot, slotNo) => {
@@ -84,6 +91,8 @@ export class ParkingLotService {
       console.log(`Slot ${slotNo}: ${carDetails}`);
     });
   }
+
+  //Implementatino of the clearSlot endpoint feature...remvoving the car from map by slotno..
   clearSlotBySlotNo(slotNo: number): number {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -100,7 +109,7 @@ export class ParkingLotService {
     this.printSlots();
     return slotNo;
   }
-
+  //Clearnign map from the RegNo...
   clearSlotByRegNo(registrationNo: string): number {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -117,6 +126,7 @@ export class ParkingLotService {
     }
     throw new NotFoundException('Car with given registration number not found');
   }
+  //Status endpoint implementation..know the status of the parking space(Map)
   getOccupiedSlots(): { slot_no: number; registration_no: string; color: string }[] {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -134,6 +144,8 @@ export class ParkingLotService {
     }
     return occupiedSlots;
   }
+
+  //Fetch all cars with "color"
   getRegistrationNumbersByColor(color: string): string[] {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
@@ -147,6 +159,7 @@ export class ParkingLotService {
     }
     return regNos;
   }
+  //Fetch slotNo by "color"
   getSlotNumbersByColor(color: string): string[] {
     if (this.totalSlots === 0) {
       throw new BadRequestException('Parking lot not initialized yet');
